@@ -109,6 +109,12 @@ struct thread {
 	bool t_did_reserve_buffers;	/* reserve_buffers() in effect */
 
 	/* add more here as needed */
+	bool th_flag;
+	struct wchan *th_wchan;
+	struct cv *th_cv;
+	struct thread *th_parent;
+	struct thread *th_child;
+	struct lock *th_lock;
 };
 
 /*
@@ -171,5 +177,8 @@ void schedule(void);
  */
 void thread_consider_migration(void);
 
-
+/*
+ * thread_join prototype
+ */
+ void thread_join(void);
 #endif /* _THREAD_H_ */

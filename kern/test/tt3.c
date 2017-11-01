@@ -274,3 +274,22 @@ threadtest3(int nargs, char **args)
 	}
 	return 0;
 }
+
+// /* Here I add functions for thread test 4 */
+// static
+// void
+// runtest4()
+// {
+// 	kprintf("Starting thread test 4.... \n");
+// 	//thread_fork();
+// 	//thread_join();
+// 	kprintf(" World\n");
+// 	return 0;
+// }
+//
+// int
+// threadtest4(int nargs, char **args)
+// {
+// 	runtest4();
+// 	return 0;
+// }

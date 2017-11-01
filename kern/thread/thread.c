@@ -72,6 +72,19 @@ static struct semaphore *cpu_startup_sem;
 ////////////////////////////////////////////////////////////
 
 /*
+	thread_join definition following the steps provided by the
+	powerpoint from the proffesor.
+*/
+void thread_join() {
+	lock_acquire(curthread->th_lock);
+	while (curthread->th_child != NULL) {
+		cv_wait(curthread->th_cv, curthread->th_lock);
+	}
+	lock_release(curthread->th_lock);
+}
+
+
+/*
  * Stick a magic number on the bottom end of the stack. This will
  * (sometimes) catch kernel stack overflows. Use thread_checkstack()
  * to test this.
@@ -150,6 +163,12 @@ thread_create(const char *name)
 	thread->t_did_reserve_buffers = false;
 
 	/* If you add to struct thread, be sure to initialize here */
+	thread->th_flag = false;
+	thread->th_wchan = NULL;
+	thread->th_cv = NULL;
+	thread->th_parent = NULL;
+	thread->th_child = NULL;
+	thread->th_lock = NULL;
 
 	return thread;
 }
@@ -798,6 +817,14 @@ thread_exit(void)
 
 	/* Check the stack guard band. */
 	thread_checkstack(cur);
+
+	/* Insert code here for thread_join implementation */
+	if (cur->th_child != NULL) {
+		lock_acquire(cur->th_lock);
+		cur->th_child = NULL;
+		cv_signal(cur->th_cv, cur->th_lock);
+		lock_release(cur->th_lock);
+	}
 
 	/* Interrupts off on this processor */
         splhigh();
